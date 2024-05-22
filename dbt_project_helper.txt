@@ -1,0 +1,59 @@
+poetry run dbt debug
+poetry run dbt compile
+poetry run dbt run
+poetry run dbt docs generate - generate documentation in $/target/catalog.json
+poetry run dbt docs serve
+poetry run dbt run -s staging - only run the models in staging schema
+poetry run dbt run -s +customers - only run the models that are upftream to customers schema
+poetry run dbt run -s 1+customers - only run the models that are upftream to customers schema
+poetry run dbt run -s staging+ - only run the models downstream from staging schema
+
+TO DO for model:
+Create the model sql file.
+Create / "Add to" the model yml file
+Add to model the dbt_project.yml to define schema and / or materialization
+
+Sources:
+source yml - Pointer to data already in the DWH
+select * from {{ source('tech_store', 'customer') }} - The name is defined in the source.yml file
+
+generate_schema_name JINJA use
+
+$/models/{layer}/{source}/source.yml
+sources:
+  - name: tech_store (used as reference within dbt)
+    database: raw  
+    schema: tech_store
+    tables:
+      - name: customer
+$/models/{layer}/{source}/source_transformed.sql
+
+Models:
+model yml - Points to data created as part of the code
+select * from {{ ref('stg_tech_store__customers') }} - The name is defined in the model.yml file
+
+$/models/{layer}/{source}/model.yml
+models:
+  - name: stg_tech_store__customers
+
+$/target/compiled - Jinja decoded + ephemeral materialization decoded - Created after running "poetry run dbt compile"
+$/target/run - As run on SQL - Created after running "poetry run dbt run	"
+
+Specify the target schema & whether the materialisation is view/table in dbt_project.yml by default.
+models:
+  dbt_demo:
+    staging:
+      +schema: staging
+      +materialized: view
+    intermediate:
+      +materialized: ephemeral # This is a dbt CTE
+    marts:
+      +schema: marts
+      +materialized: table
+
+
+Overridden in order:
+	profile.yml - by default created in the User folder
+	dbt_project.yml
+	[source.yml] | [model.yml]
+	config () (.sql)

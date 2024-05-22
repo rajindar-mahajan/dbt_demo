@@ -1,0 +1,16 @@
+version: 2
+
+seeds:
+  - name: sale_dates
+    config:
+      +schema: staging
+      +column_types:
+        SALE_DATE: date
+        NAME: varchar
+        DISCOUNT_PERCENT: numeric(18,2)
+  - name: exchange_rate_to_usd
+    config:
+      +schema: staging
+      +column_types:
+        TO_CURRENCY: varchar
+        EXCHANGE_RATE_TO_USD: numeric(18,7)

@@ -22,6 +22,19 @@ clean-targets:         # directories to be removed by `dbt clean`
   - "target"
   - "dbt_packages"
 
+seeds:
+  dbt_demo:
+    sale_dates:
+      +schema: staging
+      +column_types:
+        SALE_DATE: date
+        NAME: varchar
+        DISCOUNT_PERCENT: numeric(18,2)
+    exchange_rate_to_usd:
+      +schema: staging
+      +column_types:
+        TO_CURRENCY: varchar
+        EXCHANGE_RATE_TO_USD: numeric(18,7)
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
@@ -31,6 +44,12 @@ clean-targets:         # directories to be removed by `dbt clean`
 # files using the `{{ config(...) }}` macro.
 models:
   dbt_demo:
-    # Config indicated by + and applies to all files under models/example/
-    example:
+    staging:
+      +schema: staging
       +materialized: view
+    intermediate:
+      +materialized: ephemeral
+    marts:
+      +schema: marts
+      +materialized: table
+
