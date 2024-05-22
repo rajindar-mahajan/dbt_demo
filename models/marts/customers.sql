@@ -41,7 +41,8 @@ final as (
         customers.created_at_est, -- new
         customers.updated_at,
         customers.updated_at_est, -- new
-        customers.is_active
+        customers.is_active,
+        'Raj' as creator
 
     from customers
 
