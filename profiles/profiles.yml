@@ -1,0 +1,23 @@
+dbt_demo:
+  target: dev
+  outputs:
+    dev:
+      account: iapuaqk-ti43915
+      database: dbt_dev
+      password: Arch2024Enablement!
+      role: dbt_dev_role
+      schema: public
+      threads: 2
+      type: snowflake
+      user: dbt_user
+      warehouse: dbt_dev_wh
+    prod:
+      account: iapuaqk-ti43915
+      database: dbt_prod
+      password: Arch2024Enablement!
+      role: dbt_prod_role
+      schema: public
+      threads: 2
+      type: snowflake
+      user: dbt_user
+      warehouse: dbt_prod_wh

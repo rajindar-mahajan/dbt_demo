@@ -1,24 +1,24 @@
-with
+WITH
 
-orders as (
+ORDERS AS (
 
-    select * from {{ source('tech_store', 'orders') }}
+    SELECT * FROM {{ source('tech_store', 'orders') }}
 
 ),
 
-final as (
+FINAL AS (
 
-    select
-        id as order_id,
-        productid as product_id,
-        quantity,
-        userid as employee_id,
-        customerid as customer_id,
-        datetime as created_at,
-        {{ utc_to_est('datetime') }} as created_at_est
+    SELECT
+        ID AS ORDER_ID,
+        PRODUCTID AS PRODUCT_ID,
+        QUANTITY,
+        USERID AS EMPLOYEE_ID,
+        CUSTOMERID AS CUSTOMER_ID,
+        DATETIME AS CREATED_AT,
+        {{ utc_to_est('datetime') }} AS CREATED_AT_EST
 
-    from orders
+    FROM ORDERS
 
 )
 
-select * from final
+SELECT * FROM FINAL

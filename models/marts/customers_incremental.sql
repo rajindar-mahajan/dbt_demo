@@ -4,77 +4,77 @@
         unique_key = 'customer_id'
     )
 }}
-    -- REQUIREMENTS
-    -- 1. cannot trigger as a full refresh
-    -- 2. midel must already exist
-    -- 3. table in DB must already exist - Otherwise it gets created as part of full refresh
-    -- 4. materialzed set to incremental
+-- REQUIREMENTS
+-- 1. cannot trigger as a full refresh
+-- 2. midel must already exist
+-- 3. table in DB must already exist - Otherwise it gets created as part of full refresh
+-- 4. materialzed set to incremental
 
-with
+WITH
 
-customers as (
+CUSTOMERS AS (
 
-    select * from {{ ref('stg_tech_store__customers') }}
+    SELECT * FROM {{ ref('stg_tech_store__customers') }}
 
     {% if is_incremental() %}
 
-    where created_at_est > (
-        COALESCE( (select max(created_at_est) from {{ this }} ), '1900-01-01')
+        WHERE CREATED_AT_EST > (
+            COALESCE((SELECT MAX(CREATED_AT_EST) AS MAX_CREATED_AT_EST FROM {{ this }}), '1900-01-01')
         )
-        OR updated_at_est > (
-        COALESCE( (select max(updated_at_est) from {{ this }} ), '1900-01-01')
+        OR UPDATED_AT_EST > (
+            COALESCE((SELECT MAX(UPDATED_AT_EST) AS MAX_CREATED_AT_EST FROM {{ this }}), '1900-01-01')
         )
     {% endif %}
 ),
 
-customers_and_locations_joined as (
+CUSTOMERS_AND_LOCATIONS_JOINED AS (
 
-    select * from {{ ref('int_customers_and_locations_joined') }}
-
-),
-
-employees as (
-
-    select * from {{ ref('stg_tech_store__employees') }}
+    SELECT * FROM {{ ref('int_customers_and_locations_joined') }}
 
 ),
 
-order_amounts_by_customer as (
+EMPLOYEES AS (
 
-    select * from {{ ref('int_order_amounts_agg_by_customer') }}
+    SELECT * FROM {{ ref('stg_tech_store__employees') }}
 
 ),
 
-final as (
+ORDER_AMOUNTS_BY_CUSTOMER AS (
 
-    select
-        customers.customer_id,
-        customers.customer_name,
-        customers_and_locations_joined.city_name,
-        customers_and_locations_joined.state_name,
-        customers_and_locations_joined.zip_code,
-        nvl(employees.full_name, 'None') as main_employee,
-        employees.is_active as main_employee_is_active,
-        nvl(order_amounts_by_customer.total_revenue_in_usd, 0) 
-            as total_revenue_in_usd,
-        nvl(order_amounts_by_customer.total_quantity, 0) as total_quantity,
-        customers.created_at,
-        customers.created_at_est, -- new
-        customers.updated_at,
-        customers.updated_at_est, -- new
-        customers.is_active
+    SELECT * FROM {{ ref('int_order_amounts_agg_by_customer') }}
 
-    from customers
+),
 
-    left join customers_and_locations_joined
-        on customers.customer_id = customers_and_locations_joined.customer_id
-    
-    left join employees
-        on customers.main_employee_id = employees.employee_id
+FINAL AS (
 
-    left join order_amounts_by_customer
-        on customers.customer_id = order_amounts_by_customer.customer_id
+    SELECT
+        CUSTOMERS.CUSTOMER_ID,
+        CUSTOMERS.CUSTOMER_NAME,
+        CUSTOMERS_AND_LOCATIONS_JOINED.CITY_NAME,
+        CUSTOMERS_AND_LOCATIONS_JOINED.STATE_NAME,
+        CUSTOMERS_AND_LOCATIONS_JOINED.ZIP_CODE,
+        COALESCE(EMPLOYEES.FULL_NAME, 'None') AS MAIN_EMPLOYEE,
+        EMPLOYEES.IS_ACTIVE AS MAIN_EMPLOYEE_IS_ACTIVE,
+        COALESCE(ORDER_AMOUNTS_BY_CUSTOMER.TOTAL_REVENUE_IN_USD, 0)
+            AS TOTAL_REVENUE_IN_USD,
+        COALESCE(ORDER_AMOUNTS_BY_CUSTOMER.TOTAL_QUANTITY, 0) AS TOTAL_QUANTITY,
+        CUSTOMERS.CREATED_AT,
+        CUSTOMERS.CREATED_AT_EST, -- new
+        CUSTOMERS.UPDATED_AT,
+        CUSTOMERS.UPDATED_AT_EST, -- new
+        CUSTOMERS.IS_ACTIVE
+
+    FROM CUSTOMERS
+
+    LEFT JOIN CUSTOMERS_AND_LOCATIONS_JOINED
+        ON CUSTOMERS.CUSTOMER_ID = CUSTOMERS_AND_LOCATIONS_JOINED.CUSTOMER_ID
+
+    LEFT JOIN EMPLOYEES
+        ON CUSTOMERS.MAIN_EMPLOYEE_ID = EMPLOYEES.EMPLOYEE_ID
+
+    LEFT JOIN ORDER_AMOUNTS_BY_CUSTOMER
+        ON CUSTOMERS.CUSTOMER_ID = ORDER_AMOUNTS_BY_CUSTOMER.CUSTOMER_ID
 
 )
 
-select * from final
+SELECT * FROM FINAL

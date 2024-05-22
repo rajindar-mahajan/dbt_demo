@@ -1,26 +1,26 @@
-with
+WITH
 
-customers as (
+CUSTOMERS AS (
 
-    select * from {{ source('tech_store', 'customer') }}
+    SELECT * FROM {{ source('tech_store', 'customer') }}
 
 ),
 
-final as (
+FINAL AS (
 
-    select
-        id as customer_id,
-        name as customer_name,
-        cityid as city_id,
-        mainsalesrepid as main_employee_id,
-        createdatetime as created_at,
-        {{ utc_to_est('createdatetime') }} as created_at_est,
-        updatedatetime as updated_at,
-        {{ utc_to_est('updatedatetime') }} as updated_at_est,
-        iff(active = 'yes', true, false) as is_active
-    
-    from customers
+    SELECT
+        ID AS CUSTOMER_ID,
+        NAME AS CUSTOMER_NAME,
+        CITYID AS CITY_ID,
+        MAINSALESREPID AS MAIN_EMPLOYEE_ID,
+        CREATEDATETIME AS CREATED_AT,
+        {{ utc_to_est('createdatetime') }} AS CREATED_AT_EST,
+        UPDATEDATETIME AS UPDATED_AT,
+        {{ utc_to_est('updatedatetime') }} AS UPDATED_AT_EST,
+        IFF(ACTIVE = 'yes', TRUE, FALSE) AS IS_ACTIVE
+
+    FROM CUSTOMERS
 
 )
 
-select * from final
+SELECT * FROM FINAL

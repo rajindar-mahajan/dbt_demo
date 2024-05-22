@@ -8,6 +8,8 @@ poetry run dbt run -s +customers - only run the models that are upftream to cust
 poetry run dbt run -s 1+customers - only run the models that are upftream to customers schema
 poetry run dbt run -s staging+ - only run the models downstream from staging schema
 
+poetry run pre-commit install - installs the pre-commit hooks which run the background and blocks any commit if there is any issue
+
 TO DO for model:
 Create the model sql file.
 Create / "Add to" the model yml file
@@ -57,3 +59,17 @@ Overridden in order:
 	dbt_project.yml
 	[source.yml] | [model.yml]
 	config () (.sql)
+
+
+.sqlfluffignore - sqlfluff ignore folder
+
+
+.pre-commit-hooks.yaml - Check this to see if any software will be used for pre-commit
+https://github.com/adrienverge/yamllint/blob/master/.pre-commit-hooks.yaml
+
+dbt coverage
+
+New branch -> From main (GH D)
+Do your changes (VS points to the new branch)
+Commit to <branch> (GH D)
+Publish branch (GH D)
